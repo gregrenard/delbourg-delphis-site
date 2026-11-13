@@ -27,7 +27,7 @@ The gates check, among others:
 |---|---|
 | `index.html`, `about.html`, `book.html`, `speaking.html`, `more.html`, `blog.html`, `contact.html` | Generated: the Design pages, transformed and pre-rendered. The slugs are the legacy Wix URLs (`more` is the Writings page) |
 | `support.js` | The Claude Design runtime (vendored, generated, never edit) |
-| `assets/` | Social card (1200×630), favicon, apple-touch icon. Rendered from `.claude/skills/sync-marylene-site/assets-src/` |
+| `assets/` | Social card (`og-card.jpg`, 1200×630: portrait, name, tagline), favicon, apple-touch icon. Rendered from `.claude/skills/sync-marylene-site/assets-src/` |
 | `robots.txt`, `sitemap.xml`, `llms.txt`, `404.html` | Repo-only files; a sync must never clobber them. `llms.txt` is hand-written |
 | `.claude/skills/sync-marylene-site/` | The sync pipeline: `pages.json` (the only page list), `deploy.sh`, `verify.sh` (gates a–m), `check-layout.py`, `check-seo.py`, `verify-live.sh`… |
 

@@ -42,7 +42,7 @@ The personal site of **Marylene Delbourg-Delphis** (serial technology CEO, advis
 2  home-link rewrite -> "./"                 quote-anchored; name read from pages.json, %20-encoded
 3  slug-links.py                             Design names -> legacy Wix slugs (links + file rename)
 4  seo-clean-urls.py                         strip .dc.html, lift <helmet> into <head>, lang="en"
-5  site-seo.py                               robots mode, theme-color, favicons, og/twitter image, JSON-LD
+5  site-seo.py                               robots mode, theme-color, favicons, og/twitter image (one local card for every page), JSON-LD
 6  rename *.dc.html -> *.html, rm home source, bump sitemap <lastmod>
 7  prerender.py                              LAST: static mirror for no-JS crawlers
    verify.sh                                 gates a–m
@@ -66,7 +66,7 @@ The personal site of **Marylene Delbourg-Delphis** (serial technology CEO, advis
 | (j) | contact form wired | WARN |
 | (k) | each page: static `lang="en"`, own canonical, EN and FR dictionaries, language toggle | yes |
 | (l) | **layout** (`check-layout.py`): all 7 pages × **390 / 768 / 1440 px** × **EN and FR** = 42 renders in a true-width iframe: no horizontal scroll, no unclipped element past the edge, `<h1>` rendered, `<html lang>` equals the requested language and the header carries that language's nav label. Visible `{{ }}` = WARN | yes |
-| (m) | **SEO + LLM-SEO** (`check-seo.py`): title / description (length = WARN), canonical equals the deployed URL, OG + Twitter tags, og:image 1200×630 when local (hotlinked = WARN), JSON-LD (Person + WebSite on Home, BreadcrumbList on sub-pages, two Book entries on /book), favicon + apple-touch-icon, robots meta matches the mode; robots.txt allows GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended; llms.txt well-formed and naming Marylene | yes |
+| (m) | **SEO + LLM-SEO** (`check-seo.py`): title / description (length = WARN), canonical equals the deployed URL, OG + Twitter tags, og:image local, 1200×630, under 300 KB (hotlinked = WARN), JSON-LD (Person + WebSite on Home, BreadcrumbList on sub-pages, two Book entries on /book), favicon + apple-touch-icon, robots meta matches the mode; robots.txt allows GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended; llms.txt well-formed and naming Marylene | yes |
 
 How the two languages are tested: the site has no per-language URL, so the layout gate's server injects `localStorage.setItem('mdd_lang', <lang>)` as the first thing in `<head>`, before `support.js` runs. The runtime then starts in that language exactly as for a returning visitor who chose it.
 
@@ -74,6 +74,7 @@ How the two languages are tested: the site has no per-language URL, so the layou
 Design's pages carry canonicals copied from the Wix site: `/about`, `/book`, `/speaking`, `/more` (Writings), `/blog`, `/contact`. The nav links use the Design file names (`About`, `Books`, `Writings`…). GitHub Pages is case-sensitive, so serving `/About` while the canonical says `/about` would split every page in two for search engines and break every inbound link from the Wix era. Deploying under the legacy slugs keeps the canonicals correct as shipped and keeps old links alive on the day the domain moves. Alternative if the authors prefer readable URLs (`/books`, `/writings`): change the slugs in `pages.json`, set matching canonicals in Design, and add redirect stubs (`role: stub`) for the old Wix paths.
 
 ## Open items (not for the sync to fix)
+- **Book share card:** `/book` uses the same card as every page, because the Wix cover has "June 2024" and "Georgetown University Press" baked into the image and clashes with a designed card. With a clean cover, add `og-book.html` to `assets-src/` and map `book` to it in `site-seo.py`.
 - **Contact form** sends nothing (it only sets `sent:true`). Before launch: pick an endpoint (Brevo, or a dedicated Google Apps Script), add honeypot + consent, write `patch-forms.py`, mark `data-form-endpoint=`. **Never reuse another site's endpoint.**
 - **Hotlinked images:** the pages load photos and covers from `static.wixstatic.com` (5) and `substackcdn.com` (1), and the Home `og:image` is a Wix URL. They die with the Wix account. Copy them into `assets/` (Design copies over 256 KiB cannot be pulled, so use the originals) before the domain leaves Wix.
 - **Titles and descriptions** over the recommended length (book 90 / more 81 chars; most descriptions 180–210): edit in Design, they are WARN only.
@@ -81,7 +82,7 @@ Design's pages carry canonicals copied from the Wix site: `/about`, `/book`, `/s
 - **Design `github.md`** still points at `gregory-renard-site`.
 
 ## Permanent repo files (not from Design; a sync must never clobber them)
-`404.html` (computes its home link, so it works on both hosts), `robots.txt`, `sitemap.xml`, `llms.txt` (hand-written: editorial, never generated), `support.js` (the dc-runtime; vendored), `assets/` (`og-card.png`, `favicon.png`, `apple-touch-icon.png`, rendered from `assets-src/*.html` with headless Chrome), and `CNAME` once launched.
+`404.html` (computes its home link, so it works on both hosts), `robots.txt`, `sitemap.xml`, `llms.txt` (hand-written: editorial, never generated), `support.js` (the dc-runtime; vendored), `assets/` (`og-card.jpg`, `favicon.png`, `apple-touch-icon.png`, rendered from `assets-src/*.html` with headless Chrome; the card uses `assets-src/portrait.jpg`), and `CNAME` once launched.
 
 ## Differences from sync-book-site
 - Seven pages instead of one; `slug-links.py` is new; the book's `book-seo.py` (generates `fr.html`, hardcodes French head strings) and `layout-fix.py` (book hero fixes) are dropped; `site-seo.py` replaces them.

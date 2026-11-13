@@ -62,7 +62,7 @@ for t in $(grep -hoE "assets/[A-Za-z0-9%@_./-]+\.(png|jpg|jpeg|webp|gif|svg|mp4|
 done
 
 echo "--- (f) permanent repo files intact (must NOT be clobbered by a sync) ---"
-for pf in 404.html robots.txt sitemap.xml llms.txt support.js assets/og-card.png assets/favicon.png assets/apple-touch-icon.png; do
+for pf in 404.html robots.txt sitemap.xml llms.txt support.js assets/og-card.jpg assets/favicon.png assets/apple-touch-icon.png; do
   [ -f "$pf" ] && echo "  ok: $pf" || { echo "  BAD: $pf MISSING"; fail=1; }
 done
 if [ "$DRAFT" = "1" ]; then

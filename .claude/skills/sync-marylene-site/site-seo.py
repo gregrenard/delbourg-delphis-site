@@ -13,9 +13,10 @@ additive parts, and the robots rewrite is a no-op once applied.
    compete with it in search results. When "draft" is false the Design value is kept.
 2. Head extras: theme-color (paper #FBFAF7), favicon and apple-touch-icon (relative paths,
    so they work under a github.io project path too).
-3. Social image: pages whose <helmet> has no og:image get the local 1200x630 card
-   (assets/og-card.png) plus twitter:image. Pages that already carry one (Home portrait,
-   Books cover) keep it; they only gain twitter:image if missing.
+3. Social image: every page gets the local 1200x630 card (assets/og-card.jpg: portrait, name,
+   tagline) as og:image and twitter:image, served from LIVE_URL. Design's own og:image on the
+   Home is the Wix portrait cropped from the top, which previews as a head of hair; on Books
+   it is a 454x654 cover with baked-in text. Both are replaced, in the head and the helmet.
 4. JSON-LD, built here (Design only ships Person on the Home):
    - WebSite on the Home, declaring inLanguage en + fr;
    - BreadcrumbList on every sub-page;
@@ -33,14 +34,19 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from manifest import DRAFT, PAGES, SITE, home_design  # noqa: E402
+from manifest import DRAFT, LIVE_URL, PAGES, SITE, home_design  # noqa: E402
 
 HOME_DESIGN = home_design()
 
+import re  # noqa: E402
+
 MARK = 'id="site-seo-ld"'
+IMG_TAGS = re.compile(r'[ \t]*<meta (?:property="og:image[^"]*"|name="twitter:image") content="[^"]*">\n?')
 INDEX = '<meta name="robots" content="index, follow">'
 NOINDEX = '<meta name="robots" content="noindex, nofollow">'
-OG_IMAGE = SITE + "/assets/og-card.png"
+# Absolute, and on the host that actually answers today: in draft that is the github.io preview,
+# NOT www.delbourg-delphis.org (still the live Wix site, which has no such file).
+OG_IMAGE = LIVE_URL + "/assets/og-card.jpg"
 OG_ALT = "Marylene Delbourg-Delphis — Innovation and people in the 21st century"
 PERSON = {"@type": "Person", "name": "Marylene Delbourg-Delphis", "url": SITE + "/"}
 
@@ -99,6 +105,10 @@ def meta_present(head, attr, name):
 pages = sorted(glob.glob("*.dc.html")) + (["index.html"] if os.path.exists("index.html") else [])
 for p in pages:
     s = open(p, encoding="utf-8").read()
+    if MARK not in s.partition("<body")[0]:
+        # Design's og:image is the Wix portrait cropped from the top (al_t): social previews
+        # show only her hair. One local, designed card replaces it everywhere, helmet included.
+        s = IMG_TAGS.sub("", s)
     head, sep, body = s.partition("<body")
     if "<title>" not in head:
         sys.exit("site-seo: %s has no static <title> in <head>; run seo-clean-urls.py first" % p)
@@ -110,18 +120,12 @@ for p in pages:
             extra.append('<link rel="icon" type="image/png" href="assets/favicon.png">')
         if 'rel="apple-touch-icon"' not in head:
             extra.append('<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">')
-        if not meta_present(head, "property", "og:image"):
-            extra.append('<meta property="og:image" content="%s">' % OG_IMAGE)
-            extra.append('<meta property="og:image:width" content="1200">')
-            extra.append('<meta property="og:image:height" content="630">')
-            extra.append('<meta property="og:image:alt" content="%s">' % OG_ALT)
-            if not meta_present(head, "name", "twitter:image"):
-                extra.append('<meta name="twitter:image" content="%s">' % OG_IMAGE)
-        elif not meta_present(head, "name", "twitter:image"):
-            import re
-            m = re.search(r'<meta property="og:image" content="([^"]+)"', head)
-            if m:
-                extra.append('<meta name="twitter:image" content="%s">' % m.group(1))
+        extra.append('<meta property="og:image" content="%s">' % OG_IMAGE)
+        extra.append('<meta property="og:image:type" content="image/jpeg">')
+        extra.append('<meta property="og:image:width" content="1200">')
+        extra.append('<meta property="og:image:height" content="630">')
+        extra.append('<meta property="og:image:alt" content="%s">' % OG_ALT)
+        extra.append('<meta name="twitter:image" content="%s">' % OG_IMAGE)
         for i, block in enumerate(ld_blocks(slug_of(p))):
             tag_id = ' %s' % MARK if i == 0 else ""
             extra.append('<script type="application/ld+json"%s>%s</script>'

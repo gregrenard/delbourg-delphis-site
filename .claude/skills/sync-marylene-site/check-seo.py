@@ -6,8 +6,8 @@ Per page (index.html + the six content pages from pages.json):
   - canonical present and EQUAL to the URL the page is deployed at (pages.json site + slug).
     This is the check that caught Design's lowercase Wix slugs vs the capitalised file names;
   - Open Graph (title, description, url = canonical, image) and Twitter card + image present;
-  - og:image: a local file must be 1200 x 630; a hotlinked one (Wix) is a WARN, because the
-    image dies the day the Wix account does;
+  - og:image: must be a local file on the host that answers today (LIVE_URL), 1200 x 630 and
+    under 300 KB (WhatsApp drops larger previews); a hotlinked one (Wix) is a WARN;
   - JSON-LD parses; Home has Person (name, url, sameAs) and WebSite; every sub-page has a
     BreadcrumbList; /book has two Book entries;
   - favicon and apple-touch-icon referenced and present;
@@ -31,7 +31,7 @@ import struct
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from manifest import DRAFT, PAGES, SITE, prerender_files  # noqa: E402
+from manifest import DRAFT, LIVE_URL, PAGES, SITE, prerender_files  # noqa: E402
 
 AI_BOTS = ["GPTBot", "OAI-SearchBot", "ClaudeBot", "PerplexityBot", "Google-Extended"]
 NAME = "Marylene Delbourg-Delphis"
@@ -56,12 +56,24 @@ def meta(head, attr, name):
     return m.group(1) if m else None
 
 
-def png_size(path):
+def image_size(path):
+    """(width, height) of a PNG or JPEG, no dependency."""
     with open(path, "rb") as f:
-        h = f.read(24)
-    if h[:8] != b"\x89PNG\r\n\x1a\n":
-        return None
-    return struct.unpack(">II", h[16:24])
+        d = f.read()
+    if d[:8] == b"\x89PNG\r\n\x1a\n":
+        return struct.unpack(">II", d[16:24])
+    if d[:2] == b"\xff\xd8":
+        i = 2
+        while i < len(d) - 9:
+            if d[i] != 0xFF:
+                i += 1
+                continue
+            m = d[i + 1]
+            if 0xC0 <= m <= 0xCF and m not in (0xC4, 0xC8, 0xCC):
+                h, w = struct.unpack(">HH", d[i + 5:i + 9])
+                return (w, h)
+            i += 2 + struct.unpack(">H", d[i + 2:i + 4])[0]
+    return None
 
 
 def ld_types(head):
@@ -100,10 +112,11 @@ for page in prerender_files():
     say(meta(head, "name", "twitter:card") == "summary_large_image", "%s twitter:card summary_large_image" % page)
     say(meta(head, "name", "twitter:image") is not None, "%s twitter:image" % page)
     img = meta(head, "property", "og:image") or ""
-    local = img.split(SITE + "/", 1)[-1] if img.startswith(SITE) else ""
+    local = img.split(LIVE_URL + "/", 1)[-1] if img.startswith(LIVE_URL + "/") else ""
     if local:
         if os.path.exists(local):
-            size = png_size(local)
+            size = image_size(local)
+            say(os.path.getsize(local) <= 300 * 1024, "%s og:image %s is %d KB (WhatsApp ignores images over ~300 KB)" % (page, local, os.path.getsize(local) // 1024))
             say(size == (1200, 630), "%s og:image %s is %s (1200x630 expected)" % (page, local, size))
         else:
             say(False, "%s og:image does not resolve to a local file: %s" % (page, img))

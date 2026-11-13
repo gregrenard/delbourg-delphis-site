@@ -28,7 +28,7 @@ done
 
 echo "--- live: HTTP ($LIVE) ---"
 code() { curl -s -o /dev/null -w "%{http_code}" "$1"; }
-for p in "/" $(for n in $CONTENT; do echo "/$n"; done) "/assets/og-card.png" "/assets/favicon.png" "/assets/apple-touch-icon.png" "/support.js" "/robots.txt" "/llms.txt" "/sitemap.xml"; do
+for p in "/" $(for n in $CONTENT; do echo "/$n"; done) "/assets/og-card.jpg" "/assets/favicon.png" "/assets/apple-touch-icon.png" "/support.js" "/robots.txt" "/llms.txt" "/sitemap.xml"; do
   c="$(code "$LIVE$p")"; [ "$c" = "200" ] && echo "  ok: $p 200" || { echo "  BAD: $p -> $c"; fail=1; }
 done
 c="$(code "$LIVE/__does-not-exist")"; [ "$c" = "404" ] && echo "  ok: unknown page -> 404" || { echo "  BAD: unknown page -> $c"; fail=1; }
