@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.\#*
+\#*\#
+
+# Logs and temporary files
+*.log
+*.tmp
+.cache/
+
+# Dependencies (in case a build is added later)
+node_modules/
+
+# Claude Code: local settings (the .claude/skills/ pipeline stays versioned)
+.claude/settings.local.json
+
+# Local working folders (not deployed: notes, drafts)
+.works/
+
+# Python bytecode from the sync scripts
+__pycache__/
+*.pyc

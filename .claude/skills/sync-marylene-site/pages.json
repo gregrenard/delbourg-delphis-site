@@ -1,0 +1,57 @@
+{
+  "_comment": [
+    "Single source of truth for the site's page list. Read by extract-pulled.py,",
+    "deploy.sh, verify.sh and prerender.py via manifest.py — do NOT re-hardcode a",
+    "page list in any of them.",
+    "",
+    "Adding a page: add ONE entry here, then add its URL to sitemap.xml and a line",
+    "to llms.txt. verify.sh gate (i) fails until those two match this file.",
+    "",
+    "role: home    -> the Design home; deployed as index.html (generated artifact)",
+    "     content  -> a real page: gets static SEO head, pre-render, sitemap, llms.txt",
+    "     stub     -> redirect-only page: no pre-render, no sitemap, no llms.txt entry",
+    "     variant  -> generated at deploy from another page (none yet: EN/FR is an in-page toggle)",
+    "slugs are the legacy Wix URLs (/about /book /speaking /more /blog /contact): they match the canonicals Design already ships and keep old links alive at cutover. slug-links.py renames the Design file and rewrites internal links accordingly."
+  ],
+  "site": "https://www.delbourg-delphis.org",
+  "draft": true,
+  "preview_url": "https://gregrenard.github.io/delbourg-delphis-site",
+  "_draft_note": "Draft phase: served from the github.io preview with NO custom domain. www.delbourg-delphis.org is Marylene's LIVE Wix site: a CNAME file here would hijack it. While true: no CNAME, every page is noindex. Set to false + restore CNAME only when Gregory and Marylene decide to cut the domain over.",
+  "pages": [
+    {
+      "design": "Marylene Delbourg-Delphis - Home.dc.html",
+      "slug": "index",
+      "role": "home"
+    },
+    {
+      "design": "About.dc.html",
+      "slug": "about",
+      "role": "content"
+    },
+    {
+      "design": "Books.dc.html",
+      "slug": "book",
+      "role": "content"
+    },
+    {
+      "design": "Speaking.dc.html",
+      "slug": "speaking",
+      "role": "content"
+    },
+    {
+      "design": "Writings.dc.html",
+      "slug": "more",
+      "role": "content"
+    },
+    {
+      "design": "Blog.dc.html",
+      "slug": "blog",
+      "role": "content"
+    },
+    {
+      "design": "Contact.dc.html",
+      "slug": "contact",
+      "role": "content"
+    }
+  ]
+}

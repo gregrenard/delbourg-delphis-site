@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found — Marylene Delbourg-Delphis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#FBFAF7; --ink:#141418; --muted:#6A6A74; --red:#D1262B; --line:rgba(20,20,24,0.16); }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; }
+  body { background:var(--paper); color:var(--ink); font-family:"Instrument Sans",system-ui,sans-serif;
+         display:flex; align-items:center; justify-content:center; padding:2rem 16px; text-align:center; line-height:1.6; }
+  .wrap { max-width:560px; }
+  .code { font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; font-weight:600; color:var(--red); margin-bottom:1rem; }
+  h1 { font-family:"Cormorant Garamond",Georgia,serif; font-size:clamp(2rem,6vw,2.8rem); margin:0 0 .75rem; font-weight:500; font-style:italic; }
+  p { color:var(--muted); margin:0 0 1.75rem; }
+  a.btn { display:inline-block; background:var(--red); color:#fff; text-decoration:none; border-radius:100px; padding:.8rem 1.4rem; font-weight:600; font-size:.9rem; }
+  .fr { margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--line); font-size:.95rem; }
+  .fr a { color:var(--ink); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="code">404</div>
+    <h1>This page does not exist.</h1>
+    <p>The link is wrong, or the page has moved.</p>
+    <a class="btn" id="home" href="/">Back to the home page</a>
+    <div class="fr">Cette page n’existe pas. <a id="homefr" href="/">Retour à l’accueil</a></div>
+  </div>
+<script>
+/* Works on the custom domain (/) and on a github.io project path (/<repo>/). */
+(function () {
+  var base = '/';
+  if (/\.github\.io$/.test(location.hostname)) {
+    var seg = location.pathname.split('/')[1];
+    if (seg) base = '/' + seg + '/';
+  }
+  document.getElementById('home').href = base;
+  document.getElementById('homefr').href = base;
+})();
+</script>
+</body>
+</html>
