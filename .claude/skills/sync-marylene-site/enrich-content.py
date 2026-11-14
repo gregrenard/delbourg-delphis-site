@@ -92,7 +92,7 @@ def insert_after_list_start(s, key, lang_idx_marker, items):
 p = "index.html"; s = rd(p)
 if MARK not in s:
     s = must(s, 'heroCreds: \'Legion of Honour 2018 · École normale supérieure',
-             ax_keys("en") + 'heroCreds: \'Knight of the Legion of Honour 2018 · 2026 Axiom Book Awards Silver Medal · École normale supérieure', "home hero en")
+             "/* mdd-enrich */ " + ax_keys("en") + 'heroCreds: \'Knight of the Legion of Honour 2018 · 2026 Axiom Book Awards Silver Medal · École normale supérieure', "home hero en")
     s = must(s, 'heroCreds: \'Légion d’honneur 2018 · École normale supérieure',
              ax_keys("fr") + 'heroCreds: \'Chevalier de la Légion d’honneur 2018 · Axiom Book Awards 2026, médaille d’argent · École normale supérieure', "home hero fr")
     s = insert_after_list_start(s, "praise: [", 0, quote_items("en", True))
@@ -101,7 +101,6 @@ if MARK not in s:
     s = must(s, "{ l: 'Légion d’honneur', s: 'Plus haute distinction française · 2018' }", "{ l: 'Chevalier de la Légion d’honneur', s: 'Plus haute distinction française · 2018' }", "recog fr")
     s = must(s, "{ n: '2018', l: 'Awarded the French Legion of Honour' }", "{ n: '2018', l: 'Knight of the French Legion of Honour' }", "fact en")
     s = must(s, "{ n: '2018', l: 'Reçoit la Légion d’honneur' }", "{ n: '2018', l: 'Chevalier de la Légion d’honneur' }", "fact fr")
-    s = must(s, '<section class="mdd-pad" data-screen-label="Praise"', band() + '<section class="mdd-pad" data-screen-label="Praise"', "home praise section")
     wr(p, s)
 
 # ---------- book.html ----------
@@ -131,6 +130,79 @@ if MARK not in s:
     s = must(s, "{ y: '2018', h: 'Légion d’honneur', d: 'La plus haute distinction honorifique française, civile et militaire.' },",
              "{ y: '2018', h: 'Chevalier de la Légion d’honneur', d: 'La plus haute distinction honorifique française, civile et militaire.' },\n          { y: '2026', h: 'Axiom Book Awards, médaille d’argent', d: 'Pour Beyond Eureka! The Rocky Roads to Innovating.' }, /* mdd-enrich */", "about fr")
     wr(p, s)
+# ---------- new book: layouts (home row next to the award; full sheet on the books page) ----------
+WAIX = {
+ "en": dict(lead="The field-tested account of two years inside a European industrial group that took AI from first experiments to 11,000 connected accounts. No one replaced. No brain handed to a vendor.",
+            hook="Skip two years of trial and error. Keep the results.",
+            body="Most companies will spend years and millions learning what ACME learned the hard way. This book hands you the whole playbook: what worked, what failed, the real numbers, and the management questions to settle before you spend a single euro.",
+            subtitle2="An AI Reality Test and Management Reality Check",
+            stats=[("2 years", "of real deployment, compressed into one read"), ("16 chapters", "in two parts: building intelligence on your own terms, then the management reality check"), ("11,000", "connected accounts"), ("8,500 h", "returned in one year: the ROI case for your board")],
+            bkicker="What you walk away with",
+            bullets=["A roadmap that has been run for real.", "A readiness test before you spend: the Innovation Readiness Ratio.", "Honest answers for your teams, for when they ask “Will AI replace me?”", "An ROI you can defend."],
+            fw="If you want AI buzzwords, attend a conference. If you want to understand how AI adoption actually happens, read this book.", fwby="Guy Kawasaki, host of the Remarkable People podcast", fwk="From the foreword",
+            formats="Ebook and audiobook · English and French · Out 16 December 2026 · Pre-orders open", cta2="Visit the book’s website and reserve your copy"),
+ "fr": dict(lead="Le récit éprouvé de deux ans dans un groupe industriel européen qui a mené l’IA des premières expériences à 11 000 comptes connectés. Personne remplacé. Aucun cerveau confié à un fournisseur.",
+            hook="Économisez deux ans d’essais et d’erreurs. Gardez les résultats.",
+            body="La plupart des entreprises vont dépenser des années et des millions pour apprendre ce qu’ACME a appris à la dure. Ce livre vous donne tout le mode d’emploi : ce qui a marché, ce qui a échoué, les vrais chiffres, et les questions de management à trancher avant de dépenser un seul euro.",
+            subtitle2="An AI Reality Test and Management Reality Check",
+            stats=[("2 ans", "de déploiement réel, condensés en une lecture"), ("16 chapitres", "en deux parties : construire son intelligence à ses conditions, puis le contrôle de réalité du management"), ("11 000", "comptes connectés"), ("8 500 h", "restituées en un an : l’argument ROI pour votre conseil")],
+            bkicker="Ce que vous en retirez",
+            bullets=["Une feuille de route qui a été menée pour de vrai.", "Un test de maturité avant de dépenser : l’Innovation Readiness Ratio.", "Des réponses honnêtes pour vos équipes, quand elles demandent « L’IA va-t-elle me remplacer ? »", "Un ROI que vous pouvez défendre."],
+            fw="Si vous voulez des buzzwords sur l’IA, allez à une conférence. Si vous voulez comprendre comment l’adoption de l’IA se passe vraiment, lisez ce livre.", fwby="Guy Kawasaki, animateur du podcast Remarkable People", fwk="Extrait de la préface",
+            formats="Ebook et livre audio · français et anglais · Sortie le 16 décembre 2026 · Précommandes ouvertes", cta2="Visiter le site du livre et réserver votre exemplaire"),
+}
+def wai_extra(lang):
+    x = WAIX[lang]
+    stats = ",\n".join("          { n: '%s', l: '%s' }" % (js(a), js(b)) for a, b in x["stats"])
+    bul = ",\n".join("          '%s'" % js(b) for b in x["bullets"])
+    return ("waiLead: '%s', waiHook: '%s', waiBody: '%s', waiSub2: '%s', waiBKicker: '%s', waiFw: '%s', waiFwBy: '%s', waiFwK: '%s', waiCta2: '%s',\n        waiStats: [\n%s\n        ],\n        waiBullets: [\n%s\n        ],\n        "
+            % (js(x["lead"]), js(x["hook"]), js(x["body"]), js(x["subtitle2"]), js(x["bkicker"]), js(x["fw"]), js(x["fwby"]), js(x["fwk"]), js(x["cta2"]), stats, bul))
+
+def award_row():
+    """Home: two columns at the same level, the Axiom award on the left and the new book on the right."""
+    return ('<section class="mdd-pad" data-screen-label="Award and new book" data-%s="1" data-%s="1" style="max-width:1240px;margin:0 auto;padding:40px 36px 0">'
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%%,330px),1fr));gap:28px 48px;align-items:stretch;border-bottom:1px solid var(--line-soft);padding-bottom:36px">'
+            '<div style="display:flex;gap:24px;align-items:center">'
+            '<img src="assets/axiom-silver-medal-2026.png" alt="{{ t.axiomAlt }}" loading="lazy" width="140" height="173" style="width:140px;height:auto;display:block;border-radius:4px;flex:none">'
+            '<span style="display:block;min-width:0">'
+            '<span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.axiomKicker }}</span>'
+            '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-size:clamp(22px,2.2vw,32px);line-height:1.1;letter-spacing:-0.01em;font-weight:500">{{ t.axiomTitle }}</span>'
+            '<span style="display:block;margin-top:10px;font-size:15.5px;line-height:1.55;color:var(--ink-soft);text-wrap:pretty">{{ t.axiomText }}</span></span></div>'
+            '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;gap:24px;align-items:center;color:var(--ink);padding-left:0">'
+            '<img src="assets/book-working-with-another-intelligence.png" alt="{{ t.waiAlt }}" loading="lazy" width="250" height="131" style="width:min(250px,42%%);height:auto;display:block;border-radius:2px;box-shadow:0 14px 32px rgba(20,20,24,0.2);flex:none">'
+            '<span style="display:block;min-width:0">'
+            '<span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }}</span>'
+            '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-size:clamp(22px,2.2vw,32px);line-height:1.1;letter-spacing:-0.01em;font-weight:500">{{ t.waiTitle }}</span>'
+            '<span style="display:block;margin-top:8px;font-size:14px;line-height:1.5;color:var(--ink-soft);text-wrap:pretty">{{ t.waiFormats }}</span>'
+            '<span style="display:inline-block;margin-top:12px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--red);padding-bottom:1px">{{ t.waiCta }} ↗</span>'
+            '</span></a></div></section>\n\n  ') % (MARK, WAIM)
+
+def wai_fiche():
+    """Books page: the full sheet of the new book, first on the page."""
+    return ('<section id="working-with-another-intelligence" class="mdd-pad" data-screen-label="Working with Another Intelligence" data-%s="1" style="max-width:1240px;margin:0 auto;padding:52px 36px 0;scroll-margin-top:90px">'
+            '<div style="border-top:1px solid var(--ink);padding-top:14px;display:flex;justify-content:space-between;gap:16px;align-items:baseline">'
+            '<span style="font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }} · {{ t.waiFormats }}</span></div>'
+            '<div class="mdd-book" style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:64px;align-items:start;margin-top:36px">'
+            '<div><img src="assets/book-working-with-another-intelligence.png" alt="{{ t.waiAlt }}" loading="lazy" width="300" height="158" style="width:100%%;height:auto;display:block;border-radius:2px;box-shadow:0 26px 54px rgba(20,20,24,0.28)">'
+            '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding:14px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--line-soft);font-size:14.5px;font-weight:600;color:var(--ink)"><span>{{ t.waiCta2 }}</span><span>↗</span></a></div>'
+            '<div style="min-width:0">'
+            '<h2 style="font-size:clamp(34px,4.2vw,58px);line-height:1.02;letter-spacing:-0.02em;font-weight:500">{{ t.waiTitle }}</h2>'
+            '<p style="margin-top:10px;font-family:var(--font-display);font-style:italic;font-size:clamp(20px,2vw,27px);color:var(--ink-mute)">{{ t.waiSub }}</p>'
+            '<p style="margin-top:6px;font-size:13px;letter-spacing:0.04em;color:var(--ink-faint)">{{ t.waiSub2 }}</p>'
+            '<p style="margin-top:22px;font-size:17px;line-height:1.65;color:var(--ink-soft);text-wrap:pretty">{{ t.waiLead }}</p>'
+            '<p style="margin-top:18px;font-family:var(--font-display);font-size:23px;line-height:1.25;font-weight:600">{{ t.waiHook }}</p>'
+            '<p style="margin-top:8px;font-size:16.5px;line-height:1.65;color:var(--ink-soft);text-wrap:pretty">{{ t.waiBody }}</p>'
+            '<div style="margin-top:30px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px">'
+            '<sc-for list="{{ waiStats }}" as="x" hint-placeholder-count="4"><div style="border-top:1px solid var(--line);padding-top:12px">'
+            '<span style="display:block;font-family:var(--font-display);font-size:32px;line-height:1;font-weight:600">{{ x.n }}</span>'
+            '<span style="display:block;margin-top:8px;font-size:13.5px;line-height:1.45;color:var(--ink-mute)">{{ x.l }}</span></div></sc-for></div>'
+            '<div style="margin-top:34px"><span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiBKicker }}</span>'
+            '<sc-for list="{{ waiBullets }}" as="b" hint-placeholder-count="4"><p style="margin:0;padding:12px 0;border-bottom:1px solid var(--line-soft);font-size:16px;line-height:1.5">✓ {{ b }}</p></sc-for></div>'
+            '<figure style="margin:34px 0 0;padding:26px 0 0;border-top:1px solid var(--ink)"><span style="display:block;margin-bottom:12px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--ink-faint)">{{ t.waiFwK }}</span>'
+            '<blockquote style="font-size:clamp(21px,2.2vw,28px);line-height:1.3;font-style:italic;font-weight:400;text-wrap:pretty"><span style="color:var(--red)">“</span>{{ t.waiFw }}<span style="color:var(--red)">”</span></blockquote>'
+            '<figcaption style="margin-top:14px;font-weight:700;font-size:14.5px">{{ t.waiFwBy }}</figcaption></figure>'
+            '</div></div></section>\n\n  ') % WAIM
+
 # ---------- new book: Working with Another Intelligence ----------
 WAI = {
  "en": dict(kicker="New book", title="Working with Another Intelligence", sub="Why AI success depends more on people than technology",
@@ -143,7 +215,7 @@ WAI = {
 WAIM = "mdd-wai"
 def wai_keys(lang):
     w = WAI[lang]
-    return "".join("wai%s: '%s', " % (k.capitalize(), js(w[k])) for k in ("kicker", "title", "sub", "meta", "cta", "url", "alt")) + "\n        "
+    return "".join("wai%s: '%s', " % (k.capitalize(), js(w[k])) for k in ("kicker", "title", "sub", "meta", "cta", "url", "alt")) + "waiFormats: '%s', " % js(WAIX[lang]["formats"]) + "\n        "
 def wai_band(top):
     pad = "28px 36px 0" if top else "40px 36px 0"
     return ('<section class="mdd-pad" data-screen-label="New book" data-%s="1" style="max-width:1240px;margin:0 auto;padding:%s">'
@@ -161,13 +233,14 @@ p = "index.html"; s = rd(p)
 if WAIM not in s:
     s = must(s, "axiomKicker: 'Award', ", wai_keys("en") + "axiomKicker: 'Award', ", "wai home en")
     s = must(s, "axiomKicker: 'Distinction', ", wai_keys("fr") + "axiomKicker: 'Distinction', ", "wai home fr")
-    s = must(s, '<section class="mdd-hero mdd-pad" data-screen-label="Hero"', wai_band(True) + '<section class="mdd-hero mdd-pad" data-screen-label="Hero"', "wai home hero")
+    s = must(s, '<section class="mdd-pad" data-screen-label="Praise"', award_row() + '<section class="mdd-pad" data-screen-label="Praise"', "home praise section")
     wr(p, s)
 p = "book.html"; s = rd(p)
 if WAIM not in s:
-    s = must(s, "axiomKicker: 'Award', ", wai_keys("en") + "axiomKicker: 'Award', ", "wai book en")
-    s = must(s, "axiomKicker: 'Distinction', ", wai_keys("fr") + "axiomKicker: 'Distinction', ", "wai book fr")
-    s = must(s, '<section id="beyond-eureka"', wai_band(False) + '<section id="beyond-eureka"', "wai book beyond-eureka")
+    s = must(s, "axiomKicker: 'Award', ", wai_keys("en") + wai_extra("en") + "axiomKicker: 'Award', ", "wai book en")
+    s = must(s, "axiomKicker: 'Distinction', ", wai_keys("fr") + wai_extra("fr") + "axiomKicker: 'Distinction', ", "wai book fr")
+    s = must(s, 'ewQuotes: t.ew.quotes, beQuotes: t.be.quotes,', 'ewQuotes: t.ew.quotes, beQuotes: t.be.quotes, waiStats: t.waiStats, waiBullets: t.waiBullets,', "wai book return")
+    s = must(s, '<section id="beyond-eureka"', wai_fiche() + '<section id="beyond-eureka"', "wai book beyond-eureka")
     wr(p, s)
 
 # ---------- watch and listen ----------
