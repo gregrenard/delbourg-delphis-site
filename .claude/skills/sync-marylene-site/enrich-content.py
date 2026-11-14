@@ -10,7 +10,13 @@ disappears (a Design change moved the text): fix the anchor here, never skip sil
    on the home and the books page, and a 2026 milestone on the About timeline.
 2. Beyond Eureka!: the five back-cover endorsements (Solis, Yeh, Rives, Bayen, Mitra) on the books page and in the
    home praise list, EN and FR.
-3. Legion of Honour: named "Knight of the Legion of Honour" / "Chevalier de la Légion d'honneur" in the home hero
+3. New book: "Working with Another Intelligence" (with Gregory Renard), a banner at the very top of the home and above
+   the first book on the books page, linking to its own site (https://working-with-another-intelligence.com), with the
+   cover card copied from that site's assets (assets/book-working-with-another-intelligence.png).
+4. Watch and listen: her TEDx Palo Alto talk, the Silicon Carne (Carlos Diaz) videos, podcasts and interviews found online,
+   as a full list on the Speaking page and the first four on the home (each links to the original page; sources and
+   dates are in .works/media-appearances-2026-11-13.md).
+5. Legion of Honour: named "Knight of the Legion of Honour" / "Chevalier de la Légion d'honneur" in the home hero
    line, the recognition strip and the About timeline. Text only: no image of the decoration.
 
 Run BEFORE prerender.py (the static mirror is regenerated from the result).
@@ -125,4 +131,111 @@ if MARK not in s:
     s = must(s, "{ y: '2018', h: 'Légion d’honneur', d: 'La plus haute distinction honorifique française, civile et militaire.' },",
              "{ y: '2018', h: 'Chevalier de la Légion d’honneur', d: 'La plus haute distinction honorifique française, civile et militaire.' },\n          { y: '2026', h: 'Axiom Book Awards, médaille d’argent', d: 'Pour Beyond Eureka! The Rocky Roads to Innovating.' }, /* mdd-enrich */", "about fr")
     wr(p, s)
+# ---------- new book: Working with Another Intelligence ----------
+WAI = {
+ "en": dict(kicker="New book", title="Working with Another Intelligence", sub="Why AI success depends more on people than technology",
+            meta="By Marylene Delbourg-Delphis and Gregory Renard · Foreword by Guy Kawasaki · Ebook and audiobook, English and French · Out 16 December 2026",
+            cta="Discover the book and reserve your copy", url="https://working-with-another-intelligence.com/", alt="Working with Another Intelligence, by Marylene Delbourg-Delphis and Gregory Renard"),
+ "fr": dict(kicker="Nouveau livre", title="Travailler avec une autre intelligence", sub="L’IA à l’épreuve du réel",
+            meta="De Marylène Delbourg-Delphis et Gregory Renard · Préface de Guy Kawasaki · Ebook et livre audio, en français et en anglais · Sortie le 16 décembre 2026",
+            cta="Découvrir le livre et réserver votre exemplaire", url="https://working-with-another-intelligence.com/fr", alt="Travailler avec une autre intelligence, de Marylène Delbourg-Delphis et Gregory Renard"),
+}
+WAIM = "mdd-wai"
+def wai_keys(lang):
+    w = WAI[lang]
+    return "".join("wai%s: '%s', " % (k.capitalize(), js(w[k])) for k in ("kicker", "title", "sub", "meta", "cta", "url", "alt")) + "\n        "
+def wai_band(top):
+    pad = "28px 36px 0" if top else "40px 36px 0"
+    return ('<section class="mdd-pad" data-screen-label="New book" data-%s="1" style="max-width:1240px;margin:0 auto;padding:%s">'
+            '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-wrap:wrap;gap:28px 36px;align-items:center;padding:24px;background:var(--paper-2);border-top:2px solid var(--red);color:var(--ink)">'
+            '<img src="assets/book-working-with-another-intelligence.png" alt="{{ t.waiAlt }}" loading="lazy" width="320" height="168" style="width:min(320px,100%%);height:auto;display:block;border-radius:2px;box-shadow:0 18px 40px rgba(20,20,24,0.18);flex:none">'
+            '<span style="display:block;flex:1 1 320px;min-width:0">'
+            '<span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }}</span>'
+            '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-size:clamp(28px,3vw,42px);line-height:1.05;letter-spacing:-0.015em;font-weight:500">{{ t.waiTitle }}</span>'
+            '<span style="display:block;margin-top:6px;font-family:var(--font-display);font-style:italic;font-size:clamp(18px,1.7vw,23px);color:var(--ink-mute)">{{ t.waiSub }}</span>'
+            '<span style="display:block;margin-top:12px;font-size:14px;line-height:1.55;color:var(--ink-soft);max-width:640px;text-wrap:pretty">{{ t.waiMeta }}</span>'
+            '<span style="display:inline-block;margin-top:16px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--red);padding-bottom:1px">{{ t.waiCta }} ↗</span>'
+            '</span></a></section>\n\n  ') % (WAIM, pad)
+
+p = "index.html"; s = rd(p)
+if WAIM not in s:
+    s = must(s, "axiomKicker: 'Award', ", wai_keys("en") + "axiomKicker: 'Award', ", "wai home en")
+    s = must(s, "axiomKicker: 'Distinction', ", wai_keys("fr") + "axiomKicker: 'Distinction', ", "wai home fr")
+    s = must(s, '<section class="mdd-hero mdd-pad" data-screen-label="Hero"', wai_band(True) + '<section class="mdd-hero mdd-pad" data-screen-label="Hero"', "wai home hero")
+    wr(p, s)
+p = "book.html"; s = rd(p)
+if WAIM not in s:
+    s = must(s, "axiomKicker: 'Award', ", wai_keys("en") + "axiomKicker: 'Award', ", "wai book en")
+    s = must(s, "axiomKicker: 'Distinction', ", wai_keys("fr") + "axiomKicker: 'Distinction', ", "wai book fr")
+    s = must(s, '<section id="beyond-eureka"', wai_band(False) + '<section id="beyond-eureka"', "wai book beyond-eureka")
+    wr(p, s)
+
+# ---------- watch and listen ----------
+MEDIA = {
+ "en": [
+  ("Video", "Comment une philosophe française a conquis la Silicon Valley !", "Silicon Carne, Carlos Diaz · YouTube", "https://www.youtube.com/watch?v=41Ow6rlMISQ"),
+  ("Video", "What makes a successful trailblazer?", "TEDx Palo Alto · October 2024", "https://www.youtube.com/watch?v=Bx3rVu-6bL8"),
+  ("Podcast", "A Pioneer’s Perspective on the Innovation Journey", "Guy Kawasaki’s Remarkable People · May 2024", "https://podcasts.apple.com/us/podcast/maryl%C3%A8ne-delbourg-delphis-a-pioneers-perspective-on/id1483081827?i=1000654155209"),
+  ("Podcast", "Empowering Innovation", "Innovator Café, David R. Stevens · October 2024", "https://www.podpage.com/innovator-cafe-with-david-r-stevens/empowering-innovation-a-conversation-with-marylene-delbourg-delphis/"),
+  ("Video", "Marylène Delbourg, la trailblazer", "Silicon Carne, Carlos Diaz · YouTube", "https://www.youtube.com/watch?v=TbE_Efbijnw"),
+  ("Podcast", "Beyond Eureka! The Rocky Roads to Innovating", "Maker’s Wave · May 2024", "https://www.makerswave.com/beyond-eureka-the-rocky-roads-to-innovating-with-marylene-delbourg-delphis/"),
+  ("Podcast", "Faut-il lever pour réussir ?", "Silicon Carne · April 2021", "https://www.frenchweb.fr/silicon-carne-faut-il-lever-pour-reussir/419688"),
+  ("Interview", "Meeting with Marylene Delbourg-Delphis, serial entrepreneur in Silicon Valley", "MerciSF, via French Tech SF · May 2024", "https://frenchtechsf.org/news/meeting-with-marylene-delbourg-delphis-serial-entrepreneur-in-silicon-valley/"),
+  ("Interview", "Interview Series: Marylene Delbourg-Delphis", "The Delivery Man · June 2024", "https://thedeliveryman.substack.com/p/interview-series-marylene-delbourg"),
+ ],
+ "fr": [
+  ("Vidéo", "Comment une philosophe française a conquis la Silicon Valley !", "Silicon Carne, Carlos Diaz · YouTube", "https://www.youtube.com/watch?v=41Ow6rlMISQ"),
+  ("Vidéo", "What makes a successful trailblazer?", "TEDx Palo Alto · octobre 2024", "https://www.youtube.com/watch?v=Bx3rVu-6bL8"),
+  ("Podcast", "A Pioneer’s Perspective on the Innovation Journey", "Remarkable People de Guy Kawasaki · mai 2024", "https://podcasts.apple.com/us/podcast/maryl%C3%A8ne-delbourg-delphis-a-pioneers-perspective-on/id1483081827?i=1000654155209"),
+  ("Podcast", "Empowering Innovation", "Innovator Café, David R. Stevens · octobre 2024", "https://www.podpage.com/innovator-cafe-with-david-r-stevens/empowering-innovation-a-conversation-with-marylene-delbourg-delphis/"),
+  ("Vidéo", "Marylène Delbourg, la trailblazer", "Silicon Carne, Carlos Diaz · YouTube", "https://www.youtube.com/watch?v=TbE_Efbijnw"),
+  ("Podcast", "Beyond Eureka! The Rocky Roads to Innovating", "Maker’s Wave · mai 2024", "https://www.makerswave.com/beyond-eureka-the-rocky-roads-to-innovating-with-marylene-delbourg-delphis/"),
+  ("Podcast", "Faut-il lever pour réussir ?", "Silicon Carne · avril 2021", "https://www.frenchweb.fr/silicon-carne-faut-il-lever-pour-reussir/419688"),
+  ("Entretien", "Meeting with Marylene Delbourg-Delphis, serial entrepreneur in Silicon Valley", "MerciSF, via French Tech SF · mai 2024", "https://frenchtechsf.org/news/meeting-with-marylene-delbourg-delphis-serial-entrepreneur-in-silicon-valley/"),
+  ("Entretien", "Interview Series: Marylene Delbourg-Delphis", "The Delivery Man · juin 2024", "https://thedeliveryman.substack.com/p/interview-series-marylene-delbourg"),
+ ],
+}
+MEDIAT = {"en": ("Watch and listen", "Talks, podcasts and interviews", "All talks and interviews"),
+          "fr": ("Voir et écouter", "Conférences, podcasts et entretiens", "Toutes les conférences et entretiens")}
+MM = "mdd-media"
+def media_keys(lang):
+    items = ",\n".join("          { k: '%s', t: '%s', s: '%s', u: '%s' }" % tuple(js(x) for x in it) for it in MEDIA[lang])
+    k, t, a = MEDIAT[lang]
+    return "mediaKicker: '%s', mediaTitle: '%s', mediaAll: '%s',\n        media: [\n%s\n        ],\n        " % (js(k), js(t), js(a), items)
+def media_band(listname, all_link):
+    link = ('<a href="speaking" style="display:inline-block;margin-top:22px;font-size:13.5px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--red);padding-bottom:1px">{{ t.mediaAll }} →</a>' if all_link else "")
+    return ('<section class="mdd-pad" data-screen-label="Watch and listen" data-%s="1" style="max-width:1240px;margin:0 auto;padding:56px 36px 0">'
+            '<div style="border-top:1px solid var(--ink);padding-top:14px;display:flex;justify-content:space-between;gap:16px;align-items:baseline">'
+            '<span style="font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.mediaKicker }}</span></div>'
+            '<h2 style="margin-top:26px;font-size:clamp(26px,3vw,40px);line-height:1.1;letter-spacing:-0.015em;max-width:900px;text-wrap:balance">{{ t.mediaTitle }}</h2>'
+            '<div style="margin-top:12px"><sc-for list="{{ %s }}" as="m" hint-placeholder-count="4">'
+            '<a href="{{ m.u }}" target="_blank" rel="noopener noreferrer" class="mdd-row" style="display:block;padding:18px 0;border-bottom:1px solid var(--line-soft);color:var(--ink)" style-hover="color:var(--ink)">'
+            '<span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ m.k }}</span>'
+            '<span style="display:block;margin-top:6px;font-family:var(--font-display);font-size:clamp(20px,2vw,26px);line-height:1.2;font-weight:500;text-wrap:balance">{{ m.t }} ↗</span>'
+            '<span style="display:block;margin-top:4px;font-size:13.5px;color:var(--ink-mute)">{{ m.s }}</span></a></sc-for></div>%s</section>\n\n  ') % (MM, listname, link)
+
+p = "index.html"; s = rd(p)
+if MM not in s:
+    s = must(s, "axiomKicker: 'Award', ", media_keys("en") + "axiomKicker: 'Award', ", "media home en")
+    s = must(s, "axiomKicker: 'Distinction', ", media_keys("fr") + "axiomKicker: 'Distinction', ", "media home fr")
+    s = must(s, "      praiseTop: t.praise.slice(0, 2),", "      mediaTop: t.media.slice(0, 4), praiseTop: t.praise.slice(0, 2),", "media home return")
+    s = must(s, '<section class="mdd-pad" data-screen-label="About"', media_band("mediaTop", True) + '<section class="mdd-pad" data-screen-label="About"', "media home about")
+    wr(p, s)
+p = "speaking.html"; s = rd(p)
+if MM not in s:
+    s = must(s, "        kicker: 'Speaking',", "        " + media_keys("en") + "kicker: 'Speaking',", "media speaking en")
+    s = must(s, "        kicker: 'Conférences',", "        " + media_keys("fr") + "kicker: 'Conférences',", "media speaking fr")
+    s = must(s, "      more: t.more,", "      more: t.more, media: t.media,", "media speaking return")
+    s = must(s, '<section class="mdd-pad" data-screen-label="Contact CTA"', media_band("media", False) + '<section class="mdd-pad" data-screen-label="Contact CTA"', "media speaking contact")
+    wr(p, s)
+
+# ---------- home praise: keep the two columns balanced (4 large quotes left, the rest right) ----------
+p = "index.html"; s = rd(p)
+OLD = "praiseTop: t.praise.slice(0, 2), praiseBottom: t.praise.slice(2),"
+NEW = "praiseTop: t.praise.slice(0, 4), praiseBottom: t.praise.slice(4),"
+if OLD in s:
+    wr(p, s.replace(OLD, NEW, 1))
+elif NEW not in s:
+    sys.exit("enrich-content: ANCHOR NOT FOUND (home praise split)")
+
 print("enrich-content: index.html, book.html, about.html enriched (Axiom band, 5 endorsements, Legion of Honour wording)")
