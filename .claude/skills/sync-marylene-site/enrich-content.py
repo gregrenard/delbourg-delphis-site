@@ -16,10 +16,11 @@ disappears (a Design change moved the text): fix the anchor here, never skip sil
 4. Watch and listen: her TEDx Palo Alto talk, the Silicon Carne (Carlos Diaz) videos, podcasts and interviews found online,
    as a full list on the Speaking page and the first four on the home (each links to the original page; sources and
    dates are in .works/media-appearances-2026-11-13.md).
-5. TEDx feature: a large block with the stage photo (assets/tedx-palo-alto-2024.jpg) linking to the talk, on the home
-   (right after the award and new-book row) and on the Speaking page (above the Watch-and-listen list); the TEDx row is
+5. TEDx feature: a large block with the stage photo (assets/tedx-palo-alto-2024.jpg) linking to the talk, first element of the
+   Watch-and-listen section, on the home and on the Speaking page; the TEDx row is
    removed from the lists so it is not shown twice.
-6. Legion of Honour: named "Knight of the Legion of Honour" / "Chevalier de la Légion d'honneur" in the home hero
+6. Home hero sentence: it called Beyond Eureka! her "latest book"; the latest is now Working with Another Intelligence.
+7. Legion of Honour: named "Knight of the Legion of Honour" / "Chevalier de la Légion d'honneur" in the home hero
    line, the recognition strip and the About timeline. Text only: no image of the decoration.
 
 Run BEFORE prerender.py (the static mirror is regenerated from the result).
@@ -331,8 +332,8 @@ def ted_keys(lang):
     t = TED[lang]
     return "".join("ted%s: '%s', " % (k.capitalize(), js(t[k])) for k in ("kicker", "title", "sub", "text", "cta", "alt")) + "tedUrl: '%s',\n        " % TEDURL
 def ted_block():
-    return ('<section class="mdd-pad" data-screen-label="TEDx" data-%s="1" style="max-width:1240px;margin:0 auto;padding:48px 36px 0">'
-            '<a href="{{ t.tedUrl }}" target="_blank" rel="noopener noreferrer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%%,340px),1fr));gap:28px 48px;align-items:center;padding:0;color:var(--ink)">'
+    """The feature, as the first element of the Watch-and-listen section (under its heading)."""
+    return ('<a data-%s="1" href="{{ t.tedUrl }}" target="_blank" rel="noopener noreferrer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%%,340px),1fr));gap:28px 48px;align-items:center;margin-top:30px;padding:0 0 34px;border-bottom:1px solid var(--line-soft);color:var(--ink)">'
             '<span style="display:block;position:relative;background:#000;border-radius:3px;overflow:hidden;box-shadow:0 24px 54px rgba(20,20,24,0.28)">'
             '<img src="assets/tedx-palo-alto-2024.jpg" alt="{{ t.tedAlt }}" loading="lazy" width="960" height="539" style="width:100%%;height:auto;display:block">'
             '<span aria-hidden="true" style="position:absolute;left:50%%;top:50%%;transform:translate(-50%%,-50%%);width:72px;height:72px;border-radius:50%%;background:rgba(209,38,43,0.94);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.4)">'
@@ -343,7 +344,7 @@ def ted_block():
             '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-style:italic;font-size:clamp(18px,1.7vw,23px);line-height:1.3;color:var(--ink-mute)">{{ t.tedSub }}</span>'
             '<span style="display:block;margin-top:16px;font-size:16px;line-height:1.6;color:var(--ink-soft);max-width:560px;text-wrap:pretty">{{ t.tedText }}</span>'
             '<span style="display:inline-block;margin-top:20px;font-size:14px;font-weight:600;border-bottom:1px solid var(--red);padding-bottom:1px">{{ t.tedCta }} ↗</span>'
-            '</span></a></section>\n\n  ') % TM
+            '</span></a>') % TM
 
 def insert_before_nth(s, needle, n, text):
     idx = -1
@@ -356,14 +357,27 @@ if TM not in s:
     s = insert_before_nth(s, "mediaKicker: '", 0, ted_keys("en"))
     s = insert_before_nth(s, "mediaKicker: '", 1, ted_keys("fr"))
     s = must(s, "mediaTop: t.media.slice(0, 4),", "mediaTop: t.media.filter((m, i) => i !== 1).slice(0, 4),", "tedx home list")
-    s = must(s, '<section class="mdd-pad" data-screen-label="Praise"', ted_block() + '<section class="mdd-pad" data-screen-label="Praise"', "tedx home praise")
+    s = must(s, '{{ t.mediaTitle }}</h2>', '{{ t.mediaTitle }}</h2>' + ted_block(), "tedx home media")
     wr(p, s)
 p = "speaking.html"; s = rd(p)
 if TM not in s:
     s = insert_before_nth(s, "mediaKicker: '", 0, ted_keys("en"))
     s = insert_before_nth(s, "mediaKicker: '", 1, ted_keys("fr"))
     s = must(s, "more: t.more, media: t.media,", "more: t.more, media: t.media.filter((m, i) => i !== 1),", "tedx speaking list")
-    s = must(s, '<section class="mdd-pad" data-screen-label="Watch and listen"', ted_block() + '<section class="mdd-pad" data-screen-label="Watch and listen"', "tedx speaking media")
+    s = must(s, '{{ t.mediaTitle }}</h2>', '{{ t.mediaTitle }}</h2>' + ted_block(), "tedx speaking media")
     wr(p, s)
+
+# ---------- home hero: "latest book" is now Working with Another Intelligence ----------
+p = "index.html"; s = rd(p)
+HO_EN = "Her latest book, Beyond Eureka! The Rocky Roads to Innovating, was published by Georgetown University Press in 2024."
+HN_EN = "Her new book, Working with Another Intelligence, written with Gregory Renard, comes out on 16 December 2026. It follows Beyond Eureka! The Rocky Roads to Innovating (Georgetown University Press, 2024), a 2026 Axiom Book Awards Silver Medal winner."
+HO_FR = "Son dernier livre, Beyond Eureka! The Rocky Roads to Innovating, est paru chez Georgetown University Press en 2024."
+HN_FR = "Son nouveau livre, Working with Another Intelligence (Travailler avec une autre intelligence), écrit avec Gregory Renard, sort le 16 décembre 2026. Il fait suite à Beyond Eureka! The Rocky Roads to Innovating (Georgetown University Press, 2024), médaille d’argent des Axiom Book Awards 2026."
+if HO_EN in s:
+    s = must(s, HO_EN, HN_EN, "hero sentence en", -1)
+    s = must(s, HO_FR, HN_FR, "hero sentence fr", -1)
+    wr(p, s)
+elif HN_EN not in s:
+    sys.exit("enrich-content: ANCHOR NOT FOUND (home hero sentence)")
 
 print("enrich-content: index.html, book.html, about.html enriched (Axiom band, 5 endorsements, Legion of Honour wording)")
