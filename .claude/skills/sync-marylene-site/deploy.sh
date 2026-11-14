@@ -61,6 +61,9 @@ sed -i '' "s|<lastmod>[^<]*</lastmod>|<lastmod>$TODAY</lastmod>|g" sitemap.xml
 echo "==> 6b  content additions (Axiom band, Beyond Eureka! endorsements, Legion of Honour wording)"
 python3 "$SKILL_DIR/enrich-content.py"
 
+echo "==> 6c  load the Ask-your-AI widget script on every page"
+python3 "$SKILL_DIR/add-ask-widget.py"
+
 echo "==> 7/7  static pre-render (headless): real content for no-JS / non-JS crawlers"
 python3 "$SKILL_DIR/prerender.py"
 
