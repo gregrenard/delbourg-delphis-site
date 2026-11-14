@@ -12,7 +12,7 @@ disappears (a Design change moved the text): fix the anchor here, never skip sil
    home praise list, EN and FR.
 3. New book: "Working with Another Intelligence" (with Gregory Renard), a banner at the very top of the home and above
    the first book on the books page, linking to its own site (https://working-with-another-intelligence.com), with the
-   cover card copied from that site's assets (assets/book-working-with-another-intelligence.png).
+   cover (the book's final front cover, 640 px wide copy) (assets/book-working-with-another-intelligence.jpg).
 4. Watch and listen: her TEDx Palo Alto talk, the Silicon Carne (Carlos Diaz) videos, podcasts and interviews found online,
    as a full list on the Speaking page and the first four on the home (each links to the original page; sources and
    dates are in .works/media-appearances-2026-11-13.md).
@@ -169,7 +169,7 @@ def award_row():
             '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-size:clamp(22px,2.2vw,32px);line-height:1.1;letter-spacing:-0.01em;font-weight:500">{{ t.axiomTitle }}</span>'
             '<span style="display:block;margin-top:10px;font-size:15.5px;line-height:1.55;color:var(--ink-soft);text-wrap:pretty">{{ t.axiomText }}</span></span></div>'
             '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;gap:24px;align-items:center;color:var(--ink);padding-left:0">'
-            '<img src="assets/book-working-with-another-intelligence.png" alt="{{ t.waiAlt }}" loading="lazy" width="250" height="131" style="width:min(250px,42%%);height:auto;display:block;border-radius:2px;box-shadow:0 14px 32px rgba(20,20,24,0.2);flex:none">'
+            '<img src="assets/book-working-with-another-intelligence.jpg" alt="{{ t.waiAlt }}" loading="lazy" width="130" height="208" style="width:130px;height:auto;display:block;border-radius:2px;box-shadow:0 14px 32px rgba(20,20,24,0.25);flex:none">'
             '<span style="display:block;min-width:0">'
             '<span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }}</span>'
             '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-size:clamp(22px,2.2vw,32px);line-height:1.1;letter-spacing:-0.01em;font-weight:500">{{ t.waiTitle }}</span>'
@@ -183,7 +183,7 @@ def wai_fiche():
             '<div style="border-top:1px solid var(--ink);padding-top:14px;display:flex;justify-content:space-between;gap:16px;align-items:baseline">'
             '<span style="font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }} · {{ t.waiFormats }}</span></div>'
             '<div class="mdd-book" style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:64px;align-items:start;margin-top:36px">'
-            '<div><img src="assets/book-working-with-another-intelligence.png" alt="{{ t.waiAlt }}" loading="lazy" width="300" height="158" style="width:100%%;height:auto;display:block;border-radius:2px;box-shadow:0 26px 54px rgba(20,20,24,0.28)">'
+            '<div><img src="assets/book-working-with-another-intelligence.jpg" alt="{{ t.waiAlt }}" loading="lazy" width="300" height="480" style="width:100%%;height:auto;display:block;border-radius:2px;box-shadow:0 26px 54px rgba(20,20,24,0.28)">'
             '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding:14px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--line-soft);font-size:14.5px;font-weight:600;color:var(--ink)"><span>{{ t.waiCta2 }}</span><span>↗</span></a></div>'
             '<div style="min-width:0">'
             '<h2 style="font-size:clamp(34px,4.2vw,58px);line-height:1.02;letter-spacing:-0.02em;font-weight:500">{{ t.waiTitle }}</h2>'
@@ -220,7 +220,7 @@ def wai_band(top):
     pad = "28px 36px 0" if top else "40px 36px 0"
     return ('<section class="mdd-pad" data-screen-label="New book" data-%s="1" style="max-width:1240px;margin:0 auto;padding:%s">'
             '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-wrap:wrap;gap:28px 36px;align-items:center;padding:24px;background:var(--paper-2);border-top:2px solid var(--red);color:var(--ink)">'
-            '<img src="assets/book-working-with-another-intelligence.png" alt="{{ t.waiAlt }}" loading="lazy" width="320" height="168" style="width:min(320px,100%%);height:auto;display:block;border-radius:2px;box-shadow:0 18px 40px rgba(20,20,24,0.18);flex:none">'
+            '<img src="assets/book-working-with-another-intelligence.jpg" alt="{{ t.waiAlt }}" loading="lazy" width="320" height="168" style="width:min(320px,100%%);height:auto;display:block;border-radius:2px;box-shadow:0 18px 40px rgba(20,20,24,0.18);flex:none">'
             '<span style="display:block;flex:1 1 320px;min-width:0">'
             '<span style="display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }}</span>'
             '<span style="display:block;margin-top:10px;font-family:var(--font-display);font-size:clamp(28px,3vw,42px);line-height:1.05;letter-spacing:-0.015em;font-weight:500">{{ t.waiTitle }}</span>'
