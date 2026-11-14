@@ -1,9 +1,9 @@
 ---
 name: sync-marylene-site
-description: Publish the latest version of Marylene Delbourg-Delphis's website from Claude Design to its GitHub repo — pull, re-apply deploy transforms, check mobile / tablet / desktop layout in English AND French, SEO, LLM-SEO (llms.txt, AI crawlers, JSON-LD), commit, and (only after an explicit go) push, verify the live site and debrief. Use when the user says "mets à jour le site de Marylène", "synchronise le site de Marylène", "publie le site de Marylène", "sync Marylene's site", "update the Delbourg-Delphis site from Claude Design".
+description: Publish the latest version of Marylene Delbourg-Delphis's website from Claude Design to its GitHub repo — pull, re-apply deploy transforms, check mobile / tablet / desktop layout in English AND French, SEO, LLM-SEO (llms.txt, AI crawlers, JSON-LD), commit, push `main` (standing authorization, only if the blocking gates pass), verify the live site and debrief. Use when the user says "mets à jour le site de Marylène", "synchronise le site de Marylène", "publie le site de Marylène", "sync Marylene's site", "update the Delbourg-Delphis site from Claude Design".
 ---
 
-# Sync Marylene's site: Claude Design → checks → commit → (go) → GitHub → live → debrief
+# Sync Marylene's site: Claude Design → checks → commit → push (if gates pass) → GitHub → live → debrief
 
 The personal site of **Marylene Delbourg-Delphis** (serial technology CEO, advisor, board member, author of *Beyond Eureka!* and *Everybody Wants to Love Their Job*). It is **not** the book site (`sync-book-site`, `working-with-another-intelligence.com`) and **not** gregory-renard.com. The pipeline is adapted from `sync-book-site`; the differences are listed at the end.
 
@@ -16,8 +16,10 @@ The personal site of **Marylene Delbourg-Delphis** (serial technology CEO, advis
 - **gh account:** `gregrenard` (`gh auth switch -u gregrenard` if another is active; leave it on `gregrenard` afterwards). Run `gh auth status | head -3` before any `gh` or `git push`.
 - ⚠️ The Design project's `github.md` names `gregory-renard-site` as its target, a leftover. **Never push this site there.**
 
-## Push policy: draft-first, NO standing authorization
-`sync-book-site` has a standing push authorization (Gregory, 2026-09-26) **for that repo only**. **This repo has none.** Everything that leaves the machine needs an explicit go, per action: `gh repo create`, `git push`, a tag, a Pages setting. The flow therefore runs end to end **up to the local commit**, then stops and asks.
+## Push policy: standing authorization for `main`, nothing else
+Gregory gave a standing push authorization for this repo on 2026-11-13, same arrangement as `sync-book-site`: the flow pushes `main` of `gregrenard/delbourg-delphis-site` **when every blocking gate of `verify.sh` passes**, then runs `verify-live.sh` and ends with the debrief. Never push past a failing blocking gate.
+
+The authorization covers `git push origin main` and nothing else. Still needing an explicit go, per action: tags, `gh repo create`, GitHub Pages settings, and launching (`"draft": false`, `CNAME`, DNS, indexing).
 
 ## The flow
 1. **Structure:** `DesignSync list_files`, then compare the page files with `python3 .claude/skills/sync-marylene-site/manifest.py design`. A new or renamed page means updating `pages.json` (with its legacy slug if it existed on Wix), then `sitemap.xml` and `llms.txt` (gate (i)); flag it in the debrief.
@@ -26,8 +28,8 @@ The personal site of **Marylene Delbourg-Delphis** (serial technology CEO, advis
 4. **Deploy + all gates:** `bash .claude/skills/sync-marylene-site/deploy.sh` (transforms, then `verify.sh`: gates a–m, below). About one minute.
 5. **Review:** `git diff --stat`, then a text-level diff of the Design pages against the previous pull, to know what the authors changed. It feeds the commit message and the debrief.
 6. **Commit** (English, explains what changed and why, with the numbers, **no Claude attribution**). If `verify.sh` has any **BAD**, stop: no commit of the failing state, go to the debrief.
-7. **STOP. Ask for the go** to push (and, the first time, to create the repo). Quote the commit subject so the go is unambiguous.
-8. **After the go:** `git push origin main` (with `gregrenard`). If rejected: `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`. Then `bash .claude/skills/sync-marylene-site/verify-live.sh`, which waits for the Pages build of this commit and checks HTTP on every page, assets and the 404, plus a headless render of every page.
+7. **Push** is covered by the standing authorization (see "Push policy"), provided step 4 had no BAD. Without that, stop and go to the debrief.
+8. **Push:** `git push origin main` (with `gregrenard`). If rejected: `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`. Then `bash .claude/skills/sync-marylene-site/verify-live.sh`, which waits for the Pages build of this commit and checks HTTP on every page, assets and the 404, plus a headless render of every page.
 9. **Debrief** (always, even when stopped early). Write it in French, short, in this order:
    - **Résultat :** committed / pushed or not, commit SHA, live links when pushed.
    - **Ce qui a changé dans Claude Design :** 3–6 bullets from step 5.
@@ -87,4 +89,4 @@ Design's pages carry canonicals copied from the Wix site: `/about`, `/book`, `/s
 ## Differences from sync-book-site
 - Seven pages instead of one; `slug-links.py` is new; the book's `book-seo.py` (generates `fr.html`, hardcodes French head strings) and `layout-fix.py` (book hero fixes) are dropped; `site-seo.py` replaces them.
 - Gate (k) checks the toggle and dictionaries instead of `/fr` + hreflang; gate (l) adds the language dimension; gate (m) checks Person / WebSite / BreadcrumbList / Book instead of a two-author Book, and does **not** carry the book's hash-based "no real client name" guardrail, which protects that book's client and has no counterpart here.
-- **No standing push authorization** (see "Push policy").
+- Standing push authorization for `main` since 2026-11-13, like the book site, but tags and the launch stay behind an explicit go (see "Push policy").
