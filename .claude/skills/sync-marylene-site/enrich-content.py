@@ -187,7 +187,7 @@ def wai_fiche():
             '<div style="border-top:1px solid var(--ink);padding-top:14px;display:flex;justify-content:space-between;gap:16px;align-items:baseline">'
             '<span style="font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:600;color:var(--red)">{{ t.waiKicker }} · {{ t.waiFormats }}</span></div>'
             '<div class="mdd-book" style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:64px;align-items:start;margin-top:36px">'
-            '<div><img src="assets/book-working-with-another-intelligence.jpg" alt="{{ t.waiAlt }}" loading="lazy" width="300" height="480" style="width:100%%;height:auto;display:block;border-radius:2px;box-shadow:0 26px 54px rgba(20,20,24,0.28)">'
+            '<div class="mdd-sticky" style="position:sticky;top:96px"><img src="assets/book-working-with-another-intelligence.jpg" alt="{{ t.waiAlt }}" loading="lazy" width="300" height="480" style="width:100%%;height:auto;display:block;border-radius:2px;box-shadow:0 26px 54px rgba(20,20,24,0.28)">'
             '<a href="{{ t.waiUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding:14px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--line-soft);font-size:14.5px;font-weight:600;color:var(--ink)"><span>{{ t.waiCta2 }}</span><span>↗</span></a></div>'
             '<div style="min-width:0">'
             '<h2 style="font-size:clamp(34px,4.2vw,58px);line-height:1.02;letter-spacing:-0.02em;font-weight:500">{{ t.waiTitle }}</h2>'
